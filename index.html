@@ -18,10 +18,14 @@
   </head>
   <body>
     <div style="margin: 50px auto">
-      <video id="my-video" class="video-js"></video>
+      <video
+        id="my-video"
+        class="video-js"
+        data-setup='{ "playbackRates": [1, 1.25 ,1.5, 2] }'
+      ></video>
       <br />
-      <button onclick="skip(10)">Fast Forward</button>
-      <button onclick="skip(-10)">Rewind</button>
+      <!-- <button onclick="skip(10)">Fast Forward</button>
+      <button onclick="skip(-10)">Rewind</button> -->
     </div>
 
     <script>
@@ -56,10 +60,62 @@
         }
       );
 
+      var skipBehindButton = player.controlBar.addChild("button");
+      var skipBehindButtonDom = skipBehindButton.el();
+      skipBehindButtonDom.innerHTML = "10<<";
+      skipBehindButton.addClass("buttonClass");
+
+      skipBehindButtonDom.onclick = function () {
+        skip(-10);
+      };
+
+      var skipAheadButton = player.controlBar.addChild("button");
+      var skipAheadButtonDom = skipAheadButton.el();
+      skipAheadButtonDom.innerHTML = ">>10";
+      skipAheadButton.addClass("buttonClass");
+
+      skipAheadButtonDom.onclick = function () {
+        skip(10);
+      };
+
       function skip(value) {
         var video = document.querySelector("video");
         video.currentTime += value;
       }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        var player = videojs("my-video");
+        document.addEventListener("keydown", function (event) {
+          const keyCode = event.code;
+          if (keyCode === "Space") {
+            // targetting all buttons, change with class if you want
+            event.preventDefault();
+            togglePlayPause();
+          } else if (keyCode === "ArrowLeft") {
+            event.preventDefault();
+            rewind();
+          } else if (keyCode === "ArrowRight") {
+            event.preventDefault();
+            fastForward();
+          }
+        });
+
+        function rewind() {
+          player.currentTime(player.currentTime() - 10);
+        }
+
+        function fastForward() {
+          player.currentTime(player.currentTime() + 10);
+        }
+
+        function togglePlayPause() {
+          if (player.paused()) {
+            player.play();
+          } else {
+            player.pause();
+          }
+        }
+      });
     </script>
   </body>
 </html>
